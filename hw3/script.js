@@ -1,37 +1,59 @@
 // 定義變數
 let canvas = document.getElementById("myCanvas");
 let ctx = canvas.getContext("2d");
-let x = 0, y = 0, dx = 10, dy = 10, i = 0, N = 20;
+let x = 0, y = 0, dx = 5, dy = 5, r = 30, color = "#0095DD";
+let x2 = canvas.width, y2 = 0, dx2 = 5, dy2 = 5, r2 = 30, color2 = "#FF0000";
 
-// 預載走路圖片
-let walk = new Array(N);
-for(let i = 0; i < N; ++i)
+// 畫圓形
+function drawBall(x, y, r, color)
 {
-	walk[i] = new Image();
-	walk[i].src = "img/Walk (" + i + ").png";
-}
-
-// 貼上圖片
-function drawImg() 
-{    
-    ctx.drawImage(walk[i%N], x, y, 200, 200);
-}
-
-// 按下按鍵時觸發
-document.addEventListener("keydown", keyDownHandler);
-function keyDownHandler(e) 
-{
-	if(e.key == "ArrowRight")        x += dx, ++i;
-	else if(e.key == "ArrowLeft")    x -= dx, ++i;
-    else if(e.key == "ArrowUp")      y -= dy, ++i;
-	else if(e.key == "ArrowDown")    y += dy, ++i;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2); // arc(圓心x, 圓心y, 半徑, 起始角, 結束角)
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.closePath();
 }
 
 // 更新畫布
-function draw() 
-{	
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawImg();
+function draw()
+{
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    x = x + dx;
+    y = y + dy;
+	
+	x2 = x2 + dx2;
+    y2 = y2 + dy2;
+
+    // TODO: 如果發生碰撞(畫布寬canvas.width, 畫布高canvas.height)，則改變速度(dx, dy)和顏色(color)
+    if(x < 0 || x > canvas.width)
+	{
+		dx = -dx;
+	}
+	
+	if(y < 0 || y > canvas.height)
+	{
+		dy = -dy;
+	}
+	
+	if(x2 < 0 || x2 > canvas.width)
+	{
+		dx2 = -dx2;
+	}
+	
+	if(y2 < 0 || y2 > canvas.height)
+	{
+		dy2 = -dy2;
+	}
+	
+	if((x - x2)*(x - x2) + (y - y2)*(y - y2) < (r + r2)*(r + r2))
+	{
+		[dx, dx2] = [dx2, dx];
+		[dy, dy2] = [dy2, dy];
+	}
+	
+    drawBall(x, y, r, color);
+	drawBall(x2, y2, r2, color2);
     requestAnimationFrame(draw);
 }
 draw();
